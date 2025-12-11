@@ -1,0 +1,16 @@
+<table border="1">
+    <tr>
+      <th>Ad</th>
+      <th>Kod</th>
+      <th>Lokasyon</th>
+    </tr>
+  
+    {% for a in assets %}
+    <tr>
+        <td>{{ a.name }}</td>
+        <td>{{ a.code }}</td>
+        <td>{{ a.location }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  

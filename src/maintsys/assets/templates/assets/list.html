@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2>Varlık (Asset) Listesi</h2>
+
+<div id="asset-table"
+     hx-get="{% url 'asset_list' %}"
+     hx-trigger="load">
+</div>
+
+<button hx-get="{% url 'asset_create' %}"
+        hx-target="#modal-body">
+    Yeni Asset
+</button>
+
+<div id="modal-body"></div>
+
+{% endblock %}

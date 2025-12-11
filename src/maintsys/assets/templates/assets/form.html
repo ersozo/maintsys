@@ -1,0 +1,12 @@
+<form hx-post="{% url 'asset_create' %}"
+      hx-target="#asset-table"
+      hx-swap="outerHTML">
+  
+  {% csrf_token %}
+
+  <input name="name" placeholder="Ad">
+  <input name="code" placeholder="Kod">
+  <input name="location" placeholder="Lokasyon">
+
+  <button type="submit">Kaydet</button>
+</form>

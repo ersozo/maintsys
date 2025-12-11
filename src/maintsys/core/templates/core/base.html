@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MaintenanceSys{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'steel': {
+                            50: '#f4f7f9',
+                            100: '#e8eef3',
+                            200: '#d1dde7',
+                            300: '#a8c0d3',
+                            400: '#7a9dba',
+                            500: '#5a80a2',
+                            600: '#476788',
+                            700: '#3b546f',
+                            800: '#34485d',
+                            900: '#2f3e4f',
+                            950: '#1e2833',
+                        },
+                        'rust': {
+                            50: '#fdf6f3',
+                            100: '#fceae4',
+                            200: '#fad8cd',
+                            300: '#f5bca9',
+                            400: '#ed9477',
+                            500: '#e2724d',
+                            600: '#ce5633',
+                            700: '#ac4428',
+                            800: '#8e3a25',
+                            900: '#763424',
+                            950: '#40180f',
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['Outfit', 'sans-serif'],
+                        'body': ['DM Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        /* HTMX loading indicator */
+        .htmx-request .htmx-indicator {
+            display: inline-block;
+        }
+        .htmx-indicator {
+            display: none;
+        }
+        
+        /* Smooth transitions */
+        .htmx-swapping {
+            opacity: 0;
+            transition: opacity 0.2s ease-out;
+        }
+        
+        /* Modal backdrop */
+        #modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e2833;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #476788;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a80a2;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="h-full bg-steel-950 text-steel-100">
+    {% if user.is_authenticated %}
+    <div class="min-h-full flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-steel-900 border-r border-steel-800 flex flex-col">
+            <!-- Logo -->
+            <div class="h-16 flex items-center px-6 border-b border-steel-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-rust-500 to-rust-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-display font-semibold text-lg text-white">MaintSys</span>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 space-y-1">
+                <a href="{% url 'core:dashboard' %}" 
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-steel-300 hover:bg-steel-800 hover:text-white transition-colors {% if request.resolver_match.url_name == 'dashboard' %}bg-steel-800 text-white{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="{% url 'plants:plant_list' %}" 
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-steel-300 hover:bg-steel-800 hover:text-white transition-colors {% if 'plants' in request.path %}bg-steel-800 text-white{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                    <span>Tesisler</span>
+                </a>
+                
+                <a href="{% url 'assets:asset_list' %}" 
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-steel-300 hover:bg-steel-800 hover:text-white transition-colors {% if 'assets' in request.path %}bg-steel-800 text-white{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                    </svg>
+                    <span>Ekipmanlar</span>
+                </a>
+                
+                <a href="#" 
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-steel-300 hover:bg-steel-800 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <span>İş Emirleri</span>
+                </a>
+                
+                <a href="#" 
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-steel-300 hover:bg-steel-800 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Takvim</span>
+                </a>
+            </nav>
+            
+            <!-- User section -->
+            <div class="p-4 border-t border-steel-800">
+                <div class="flex items-center gap-3 px-3 py-2">
+                    <div class="w-9 h-9 bg-steel-700 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-medium text-steel-200">{{ user.username|slice:":2"|upper }}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-white truncate">{{ user.username }}</p>
+                        <p class="text-xs text-steel-400 truncate">{{ user.email }}</p>
+                    </div>
+                    <a href="{% url 'core:logout' %}" class="p-1.5 text-steel-400 hover:text-rust-400 transition-colors" title="Çıkış">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col min-h-screen">
+            <!-- Top bar -->
+            <header class="h-16 bg-steel-900/50 border-b border-steel-800 flex items-center justify-between px-6">
+                <h1 class="font-display text-xl font-semibold text-white">{% block page_title %}Dashboard{% endblock %}</h1>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Notifications -->
+                    <button class="p-2 text-steel-400 hover:text-white transition-colors relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-rust-500 rounded-full"></span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Page content -->
+            <main class="flex-1 p-6 overflow-auto">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modal container -->
+    <div id="modal-container"></div>
+    
+    {% else %}
+    <!-- Non-authenticated layout -->
+    <div class="min-h-screen flex items-center justify-center p-4">
+        {% block auth_content %}{% endblock %}
+    </div>
+    {% endif %}
+    
+    <!-- Modal template for HTMX -->
+    <template id="modal-template">
+        <div id="modal-backdrop" class="fixed inset-0 bg-steel-950/80 z-40" onclick="closeModal()"></div>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+            <div class="bg-steel-900 rounded-xl shadow-2xl border border-steel-700 w-full max-w-lg pointer-events-auto" id="modal-content">
+                <!-- Modal content will be swapped here -->
+            </div>
+        </div>
+    </template>
+    
+    <script>
+        // Modal functions
+        function openModal(content) {
+            const template = document.getElementById('modal-template');
+            const clone = template.content.cloneNode(true);
+            clone.getElementById('modal-content').innerHTML = content;
+            document.getElementById('modal-container').appendChild(clone);
+            document.body.classList.add('overflow-hidden');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal-container').innerHTML = '';
+            document.body.classList.remove('overflow-hidden');
+        }
+        
+        // HTMX event listeners
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target.id === 'modal-container') {
+                document.body.classList.add('overflow-hidden');
+            }
+        });
+        
+        document.body.addEventListener('closeModal', function() {
+            closeModal();
+        });
+        
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

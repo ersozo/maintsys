@@ -1,0 +1,40 @@
+<!-- Modal backdrop -->
+<div id="modal-backdrop" class="fixed inset-0 bg-steel-950/80 z-40" onclick="closeModal()"></div>
+
+<!-- Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+    <div class="bg-steel-900 rounded-xl shadow-2xl border border-steel-700 w-full max-w-md pointer-events-auto">
+        <!-- Modal content -->
+        <div class="p-6 text-center">
+            <div class="w-14 h-14 mx-auto mb-4 bg-rust-500/10 rounded-full flex items-center justify-center">
+                <svg class="w-7 h-7 text-rust-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            
+            <h3 class="font-display text-lg font-semibold text-white mb-2">Tesisi Sil</h3>
+            <p class="text-steel-400 mb-6">
+                <span class="font-semibold text-white">{{ plant.name }}</span> tesisini silmek istediğinize emin misiniz? 
+                Bu işlem geri alınamaz.
+            </p>
+            
+            <div class="flex items-center justify-center gap-3">
+                <button onclick="closeModal()"
+                        class="px-4 py-2.5 text-steel-300 hover:text-white font-medium rounded-lg transition-colors">
+                    İptal
+                </button>
+                <form hx-post="{% url 'plants:plant_delete' plant.pk %}"
+                      hx-target="#plant-table"
+                      hx-swap="innerHTML"
+                      class="inline">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="px-4 py-2.5 bg-rust-600 hover:bg-rust-500 text-white font-medium rounded-lg transition-colors">
+                        Evet, Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

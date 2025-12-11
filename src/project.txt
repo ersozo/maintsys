@@ -1,0 +1,23 @@
+This is the Maintenance Management System
+
+Tech stack:
+- Front end: html, css with Tailwind and Htmx
+- Modal, inline edit, htmx patterns like confirm dialog
+- Backend: Django
+- Database: SQLite. Later it will be migrated to MS Sql Server
+
+Context:
+In the management system, there are plants. 
+For each plant there will be machinery/equipment called assets.
+
+User should be able to create a plant and related assets.
+
+For each asset, user will define maintanece period and tasks should be done. 
+Data will be diplayed as schedule.
+Task completion status should be visible.
+
+Some features:
+-Rol based access (Admin / Operator / Engineer)
+-Work Order module
+-Shift based statistics
+-File upload (PDF/Photo)
