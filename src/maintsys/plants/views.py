@@ -97,3 +97,37 @@ def plant_delete(request, pk):
         return render(request, "plants/partials/plant_delete_confirm.html", {"plant": plant})
     
     return render(request, "plants/plant_delete_confirm.html", {"plant": plant})
+
+
+@login_required
+def plant_archive(request):
+    """Show archived (soft-deleted) plants"""
+    plants = Plant.objects.filter(is_active=False)
+    
+    if request.htmx:
+        return render(request, "plants/partials/plant_archive_table.html", {"plants": plants})
+    
+    return render(request, "plants/plant_archive.html", {"plants": plants})
+
+
+@login_required
+def plant_restore(request, pk):
+    """Restore a soft-deleted plant"""
+    plant = get_object_or_404(Plant, pk=pk, is_active=False)
+    
+    if request.method == "POST":
+        plant.is_active = True
+        plant.save()
+        
+        if request.htmx:
+            plants = Plant.objects.filter(is_active=False)
+            response = render(request, "plants/partials/plant_archive_table.html", {"plants": plants})
+            response['HX-Trigger'] = 'closeModal'
+            return response
+        
+        return redirect('plants:plant_archive')
+    
+    if request.htmx:
+        return render(request, "plants/partials/plant_restore_confirm.html", {"plant": plant})
+    
+    return render(request, "plants/plant_restore_confirm.html", {"plant": plant})

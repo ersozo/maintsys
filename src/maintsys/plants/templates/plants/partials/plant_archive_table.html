@@ -1,0 +1,64 @@
+{% if plants %}
+<table class="w-full">
+    <thead>
+        <tr class="border-b border-steel-800">
+            <th class="px-6 py-4 text-left text-xs font-semibold text-steel-400 uppercase tracking-wider">Kod</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-steel-400 uppercase tracking-wider">Tesis Adı</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-steel-400 uppercase tracking-wider">Şehir</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-steel-400 uppercase tracking-wider">Ekipman</th>
+            <th class="px-6 py-4 text-right text-xs font-semibold text-steel-400 uppercase tracking-wider">İşlemler</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-steel-800">
+        {% for plant in plants %}
+        <tr class="hover:bg-steel-800/50 transition-colors">
+            <td class="px-6 py-4">
+                <span class="font-mono text-sm text-steel-500">{{ plant.code }}</span>
+            </td>
+            <td class="px-6 py-4">
+                <span class="font-medium text-steel-400">{{ plant.name }}</span>
+            </td>
+            <td class="px-6 py-4 text-steel-500">{{ plant.city|default:"-" }}</td>
+            <td class="px-6 py-4">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-steel-800 rounded-full text-sm text-steel-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                    </svg>
+                    {{ plant.asset_count }}
+                </span>
+            </td>
+            <td class="px-6 py-4">
+                <div class="flex items-center justify-end gap-2">
+                    <button 
+                        hx-get="{% url 'plants:plant_restore' plant.pk %}"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        class="inline-flex items-center gap-2 px-3 py-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                        title="Geri Yükle">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Geri Yükle
+                    </button>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="p-12 text-center">
+    <svg class="w-16 h-16 mx-auto text-steel-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+    </svg>
+    <h3 class="text-lg font-medium text-steel-300 mb-2">Arşiv boş</h3>
+    <p class="text-steel-500 mb-6">Silinen tesis bulunmuyor.</p>
+    <a href="{% url 'plants:plant_list' %}"
+       class="inline-flex items-center gap-2 px-4 py-2.5 bg-steel-700 hover:bg-steel-600 text-white font-medium rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Tesislere Dön
+    </a>
+</div>
+{% endif %}

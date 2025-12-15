@@ -132,3 +132,37 @@ def asset_delete(request, pk):
         return render(request, "assets/partials/asset_delete_confirm.html", {"asset": asset})
     
     return render(request, "assets/asset_delete_confirm.html", {"asset": asset})
+
+
+@login_required
+def asset_archive(request):
+    """Show archived (soft-deleted) assets"""
+    assets = Asset.objects.filter(is_active=False).select_related('plant')
+    
+    if request.htmx:
+        return render(request, "assets/partials/asset_archive_table.html", {"assets": assets})
+    
+    return render(request, "assets/asset_archive.html", {"assets": assets})
+
+
+@login_required
+def asset_restore(request, pk):
+    """Restore a soft-deleted asset"""
+    asset = get_object_or_404(Asset, pk=pk, is_active=False)
+    
+    if request.method == "POST":
+        asset.is_active = True
+        asset.save()
+        
+        if request.htmx:
+            assets = Asset.objects.filter(is_active=False).select_related('plant')
+            response = render(request, "assets/partials/asset_archive_table.html", {"assets": assets})
+            response['HX-Trigger'] = 'closeModal'
+            return response
+        
+        return redirect('assets:asset_archive')
+    
+    if request.htmx:
+        return render(request, "assets/partials/asset_restore_confirm.html", {"asset": asset})
+    
+    return render(request, "assets/asset_restore_confirm.html", {"asset": asset})
